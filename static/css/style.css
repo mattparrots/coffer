@@ -1,0 +1,388 @@
+/* Finance Tracker Styles */
+
+:root {
+    --primary-color: #3b82f6;
+    --success-color: #22c55e;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --bg-color: #f9fafb;
+    --surface-color: #ffffff;
+    --border-color: #e5e7eb;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --sidebar-bg: #1f2937;
+    --sidebar-text: #f9fafb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    padding: 2rem 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.logo {
+    padding: 0 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.nav-links {
+    list-style: none;
+}
+
+.nav-links li {
+    margin: 0.5rem 0;
+}
+
+.nav-links a {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-links a.active {
+    background-color: var(--primary-color);
+    border-left: 4px solid var(--success-color);
+}
+
+/* Main Content */
+.content {
+    margin-left: 250px;
+    padding: 2rem;
+    flex: 1;
+}
+
+/* Cards */
+.card {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Summary Cards */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.summary-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.summary-value.positive {
+    color: var(--success-color);
+}
+
+.summary-value.negative {
+    color: var(--danger-color);
+}
+
+.summary-change {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.summary-change.up {
+    color: var(--success-color);
+}
+
+.summary-change.down {
+    color: var(--danger-color);
+}
+
+/* Charts */
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: var(--bg-color);
+}
+
+th {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+}
+
+td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+tr:hover {
+    background-color: var(--bg-color);
+}
+
+.amount {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.amount.positive {
+    color: var(--success-color);
+}
+
+.amount.negative {
+    color: var(--text-primary);
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Buttons */
+button,
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #16a34a;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.btn-secondary {
+    background-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 3rem;
+    text-align: center;
+    background-color: var(--bg-color);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.upload-area.dragover {
+    border-color: var(--primary-color);
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Filters */
+.filters {
+    background-color: var(--bg-color);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.filter-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Utilities */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mb-1 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-2 {
+    margin-bottom: 1rem;
+}
+
+.mt-2 {
+    margin-top: 1rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Loading indicator */
+.htmx-indicator {
+    display: none;
+}
+
+.htmx-request .htmx-indicator {
+    display: inline-block;
+}
+
+.spinner {
+    border: 2px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
