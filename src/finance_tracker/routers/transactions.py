@@ -19,12 +19,16 @@ templates = Jinja2Templates(directory=settings.templates_dir)
 async def transactions_list(
     request: Request,
     search: str | None = None,
-    category_id: int | None = None,
-    account_id: int | None = None,
+    category_id: str | None = None,
+    account_id: str | None = None,
     date_from: str | None = None,
     date_to: str | None = None,
 ):
     """Transaction list page with filters."""
+    # Convert empty strings to None for integer IDs
+    category_id_int = int(category_id) if category_id and category_id.strip() else None
+    account_id_int = int(account_id) if account_id and account_id.strip() else None
+
     async with get_db() as db:
         # Build query
         query = """
@@ -50,13 +54,13 @@ async def transactions_list(
             query += " AND (t.description LIKE ? OR t.merchant LIKE ?)"
             params.extend([f"%{search}%", f"%{search}%"])
 
-        if category_id:
+        if category_id_int:
             query += " AND t.category_id = ?"
-            params.append(category_id)
+            params.append(category_id_int)
 
-        if account_id:
+        if account_id_int:
             query += " AND t.account_id = ?"
-            params.append(account_id)
+            params.append(account_id_int)
 
         if date_from:
             query += " AND t.date >= ?"
@@ -104,8 +108,8 @@ async def transactions_list(
             "accounts": accounts,
             "filters": {
                 "search": search or "",
-                "category_id": category_id,
-                "account_id": account_id,
+                "category_id": category_id_int,
+                "account_id": account_id_int,
                 "date_from": date_from or "",
                 "date_to": date_to or "",
             },
