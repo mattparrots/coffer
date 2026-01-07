@@ -8,23 +8,42 @@
 
     <!-- Categories -->
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Categories</h3>
+        <div class="card-header" style="cursor: pointer;" onclick="toggleCategories()">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 class="card-title">Categories</h3>
+                <span id="categories-toggle" style="font-size: 1.5rem; transition: transform 0.2s;">▼</span>
+            </div>
         </div>
 
-        <div style="padding: 1rem;">
+        <div id="categories-content" style="display: none; padding: 1rem;">
             {% for parent in categories %}
             <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                    <div style="width: 24px; height: 24px; background-color: {{ parent.color }}; border-radius: 4px; margin-right: 0.5rem;"></div>
-                    <strong style="font-size: 1.125rem;">{{ parent.name }}</strong>
+                <div style="display: flex; align-items: center; margin-bottom: 0.5rem; justify-content: space-between;">
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 24px; height: 24px; background-color: {{ parent.color }}; border-radius: 4px; margin-right: 0.5rem;"></div>
+                        <strong style="font-size: 1.125rem;">{{ parent.name }}</strong>
+                    </div>
+                    <button
+                        class="btn btn-primary"
+                        style="padding: 0.25rem 0.75rem; font-size: 0.875rem;"
+                        onclick="editCategory({{ parent.id }}, '{{ parent.name }}')"
+                    >
+                        Edit
+                    </button>
                 </div>
 
                 {% if parent.children %}
                 <div style="margin-left: 2rem;">
                     {% for child in parent.children %}
-                    <div style="padding: 0.25rem 0; color: var(--text-secondary);">
-                        {{ child.name }}
+                    <div style="padding: 0.25rem 0; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;">
+                        <span>{{ child.name }}</span>
+                        <button
+                            class="btn btn-primary"
+                            style="padding: 0.25rem 0.75rem; font-size: 0.875rem;"
+                            onclick="editCategory({{ child.id }}, '{{ child.name }}')"
+                        >
+                            Edit
+                        </button>
                     </div>
                     {% endfor %}
                 </div>
@@ -34,11 +53,47 @@
         </div>
     </div>
 
+    <script>
+        function toggleCategories() {
+            const content = document.getElementById('categories-content');
+            const toggle = document.getElementById('categories-toggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.display = 'none';
+                toggle.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function editCategory(id, currentName) {
+            const newName = prompt('Enter new category name:', currentName);
+            if (newName && newName.trim() !== '' && newName !== currentName) {
+                htmx.ajax('PUT', `/categories/${id}`, {
+                    values: {name: newName},
+                    swap: 'none'
+                }).then(() => {
+                    location.reload();
+                });
+            }
+        }
+    </script>
+
     <!-- Category Rules -->
     <div class="card">
-        <div class="card-header">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
             <h3 class="card-title">Category Rules</h3>
+            <button
+                class="btn btn-primary"
+                hx-post="/categories/apply-rules"
+                hx-target="#bulk-result"
+                hx-confirm="Apply category rules to all uncategorized transactions?"
+            >
+                Apply Rules to Uncategorized
+            </button>
         </div>
+
+        <div id="bulk-result"></div>
 
         <p style="padding: 1rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-color);">
             Rules are used to automatically categorize transactions based on description patterns.

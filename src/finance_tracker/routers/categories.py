@@ -85,3 +85,53 @@ async def delete_rule(rule_id: int):
         await db.commit()
 
     return {"success": True}
+
+
+@router.put("/{category_id}")
+async def update_category(
+    category_id: int,
+    name: str = Form(),
+):
+    """Update a category name."""
+    async with get_db() as db:
+        await db.execute(
+            "UPDATE categories SET name = ? WHERE id = ?",
+            (name, category_id),
+        )
+        await db.commit()
+
+    return {"success": True}
+
+
+@router.post("/apply-rules", response_class=HTMLResponse)
+async def apply_rules_bulk(request: Request):
+    """Apply category rules to all uncategorized transactions."""
+    async with get_db() as db:
+        from ..services.category_service import categorize_transaction, get_uncategorized_category_id
+
+        uncategorized_id = await get_uncategorized_category_id(db)
+
+        # Get all uncategorized transactions
+        cursor = await db.execute(
+            "SELECT id, description FROM transactions WHERE category_id = ?",
+            (uncategorized_id,),
+        )
+        transactions = await cursor.fetchall()
+
+        updated_count = 0
+        for txn_id, description in transactions:
+            category_id = await categorize_transaction(db, description)
+            if category_id and category_id != uncategorized_id:
+                await db.execute(
+                    "UPDATE transactions SET category_id = ? WHERE id = ?",
+                    (category_id, txn_id),
+                )
+                updated_count += 1
+
+        await db.commit()
+
+    return f"""
+    <div style="padding: 1rem; background-color: #dcfce7; color: #166534; border-radius: 4px; margin-bottom: 1rem;">
+        Applied rules to {updated_count} transaction(s)! <a href="/categories">Refresh to continue.</a>
+    </div>
+    """
