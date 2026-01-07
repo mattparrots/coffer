@@ -1,0 +1,26 @@
+{% if success %}
+<div style="padding: 1rem; background-color: {% if result.imported > 0 %}#dcfce7{% else %}#fef3c7{% endif %}; color: {% if result.imported > 0 %}#166534{% else %}#92400e{% endif %}; border-radius: 4px; border: 1px solid {% if result.imported > 0 %}#86efac{% else %}#fcd34d{% endif %};">
+    <h4 style="margin: 0 0 0.5rem 0;">{% if result.imported > 0 %}Import Successful!{% else %}Import Completed with Issues{% endif %}</h4>
+    <p style="margin: 0;">
+        Imported {{ result.imported }} transactions from {{ result.filename }}
+        {% if result.duplicates > 0 %}
+        ({{ result.duplicates }} duplicates skipped)
+        {% endif %}
+    </p>
+    {% if result.errors %}
+    <details open style="margin-top: 1rem;">
+        <summary style="cursor: pointer; font-weight: 600;">Errors/Warnings ({{ result.errors|length }}) - Click to toggle</summary>
+        <div style="margin-top: 0.5rem; max-height: 400px; overflow-y: auto; background: white; padding: 0.5rem; border-radius: 4px; font-family: monospace; font-size: 0.875rem;">
+            {% for error in result.errors %}
+            <div style="padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </details>
+    {% endif %}
+</div>
+{% else %}
+<div style="padding: 1rem; background-color: #fee2e2; color: #991b1b; border-radius: 4px; border: 1px solid #fca5a5;">
+    <h4 style="margin: 0 0 0.5rem 0;">Import Failed</h4>
+    <p style="margin: 0;">{{ error }}</p>
+</div>
+{% endif %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Categories - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="categories-page">
+    <h2 class="mb-2">Categories & Rules</h2>
+
+    <!-- Categories -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Categories</h3>
+        </div>
+
+        <div style="padding: 1rem;">
+            {% for parent in categories %}
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                    <div style="width: 24px; height: 24px; background-color: {{ parent.color }}; border-radius: 4px; margin-right: 0.5rem;"></div>
+                    <strong style="font-size: 1.125rem;">{{ parent.name }}</strong>
+                </div>
+
+                {% if parent.children %}
+                <div style="margin-left: 2rem;">
+                    {% for child in parent.children %}
+                    <div style="padding: 0.25rem 0; color: var(--text-secondary);">
+                        {{ child.name }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Category Rules -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Category Rules</h3>
+        </div>
+
+        <p style="padding: 1rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-color);">
+            Rules are used to automatically categorize transactions based on description patterns.
+            Higher priority rules are checked first.
+        </p>
+
+        <!-- Add Rule Form -->
+        <form hx-post="/categories/rules" hx-target="#rule-result" style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+            <div style="display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 1rem; align-items: end;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="pattern">Pattern (case-insensitive)</label>
+                    <input type="text" id="pattern" name="pattern" placeholder="e.g., STARBUCKS" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="category_id">Category</label>
+                    <select id="category_id" name="category_id" required>
+                        {% for category in all_categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="priority">Priority</label>
+                    <input type="number" id="priority" name="priority" value="10" min="0" max="100">
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary">Add Rule</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="rule-result"></div>
+
+        <!-- Rules Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Pattern</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rule in rules %}
+                <tr id="rule-{{ rule.id }}">
+                    <td><code>{{ rule.pattern }}</code></td>
+                    <td>{{ rule.category_name }}</td>
+                    <td>{{ rule.priority }}</td>
+                    <td>
+                        <button
+                            class="btn btn-danger"
+                            style="padding: 0.25rem 0.75rem; font-size: 0.875rem;"
+                            hx-delete="/categories/rules/{{ rule.id }}"
+                            hx-target="#rule-{{ rule.id }}"
+                            hx-swap="outerHTML"
+                            hx-confirm="Delete this rule?"
+                        >
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">No rules defined</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

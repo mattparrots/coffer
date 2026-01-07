@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Finance Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>💰 Finance Tracker</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="/transactions" class="{% if active_page == 'transactions' %}active{% endif %}">Transactions</a></li>
+                <li><a href="/import" class="{% if active_page == 'import' %}active{% endif %}">Import</a></li>
+                <li><a href="/categories" class="{% if active_page == 'categories' %}active{% endif %}">Categories</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="/static/js/charts.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

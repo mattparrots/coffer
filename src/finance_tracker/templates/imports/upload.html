@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Import - Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="import-page">
+    <h2 class="mb-2">Import Transactions</h2>
+
+    <!-- Upload Form -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Upload File</h3>
+        </div>
+
+        <form hx-post="/import/upload" hx-encoding="multipart/form-data" hx-target="#import-result">
+            <div class="upload-area" id="upload-area">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+                <p style="font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem;">
+                    Drop CSV file here or click to browse
+                </p>
+                <p style="color: var(--text-secondary);">
+                    Supported formats: Chase, Venmo, Apple Card
+                </p>
+                <input type="file" name="file" id="file-input" accept=".csv" style="display: none;" required>
+                <button type="button" class="btn btn-primary mt-2" onclick="document.getElementById('file-input').click()">
+                    Choose File
+                </button>
+            </div>
+
+            <div id="file-selected" class="mt-2 hidden">
+                <p><strong>Selected file:</strong> <span id="filename"></span></p>
+                <button type="submit" class="btn btn-success">Import</button>
+                <button type="button" class="btn btn-secondary" onclick="resetUpload()">Cancel</button>
+            </div>
+        </form>
+
+        <div id="import-result" class="mt-2"></div>
+    </div>
+
+    <!-- Import History -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Import History</h3>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Filename</th>
+                    <th>Institution</th>
+                    <th>Transactions</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for import in imports %}
+                <tr>
+                    <td>{{ import.imported_at[:19] }}</td>
+                    <td>{{ import.filename }}</td>
+                    <td>{{ import.institution }}</td>
+                    <td>{{ import.transaction_count }}</td>
+                    <td>
+                        <span class="badge badge-{{ import.status }}">
+                            {{ import.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">No imports yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('file-input');
+    const fileSelected = document.getElementById('file-selected');
+    const filenameSpan = document.getElementById('filename');
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            showFileName(files[0].name);
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            showFileName(e.target.files[0].name);
+        }
+    });
+
+    function showFileName(name) {
+        filenameSpan.textContent = name;
+        fileSelected.classList.remove('hidden');
+    }
+
+    function resetUpload() {
+        fileInput.value = '';
+        fileSelected.classList.add('hidden');
+        document.getElementById('import-result').innerHTML = '';
+    }
+
+    // Only reload on success, not on error
+    document.body.addEventListener('htmx:afterSwap', (event) => {
+        if (event.detail.target.id === 'import-result') {
+            // Check if it was successful by looking for success indicator
+            const resultDiv = document.getElementById('import-result');
+            const isSuccess = resultDiv.innerHTML.includes('Import Successful');
+            if (isSuccess) {
+                setTimeout(() => {
+                    location.reload();
+                }, 3000);
+            }
+        }
+    });
+</script>
+{% endblock %}
