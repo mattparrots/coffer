@@ -24,6 +24,17 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "sqlite+aiosqlite:///data/finance.db"
 
+    # Plaid Configuration
+    plaid_client_id: str = ""
+    plaid_secret: str = ""
+    plaid_env: str = "sandbox"  # sandbox, development, or production
+    plaid_country_codes: list[str] = ["US"]
+    plaid_products: list[str] = ["transactions"]
+    plaid_redirect_uri: str = "http://localhost:8000/plaid/callback"
+
+    # Encryption key for Plaid access tokens (generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())")
+    encryption_key: str = ""
+
     @property
     def database_path(self) -> Path:
         """Get the filesystem path to the SQLite database."""

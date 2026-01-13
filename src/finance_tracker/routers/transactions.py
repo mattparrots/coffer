@@ -38,7 +38,8 @@ async def transactions_list(
                 a.name as account_name,
                 c.name as category_name,
                 c.color as category_color,
-                c.id as category_id
+                c.id as category_id,
+                a.source
             FROM transactions t
             LEFT JOIN accounts a ON t.account_id = a.id
             LEFT JOIN categories c ON t.category_id = c.id
@@ -83,6 +84,7 @@ async def transactions_list(
                 "category_name": row[7],
                 "category_color": row[8],
                 "category_id": row[9],
+                "source": row[10],
             }
             for row in rows
         ]
