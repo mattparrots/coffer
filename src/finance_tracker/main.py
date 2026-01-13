@@ -8,7 +8,8 @@ from fastapi.templating import Jinja2Templates
 
 from .config import settings
 from .database import init_database
-from .routers import categories, dashboard, imports, transactions
+from .routers import categories, dashboard, imports, transactions, plaid
+from .scheduler import start_scheduler, stop_scheduler
 
 
 @asynccontextmanager
@@ -16,8 +17,15 @@ async def lifespan(app: FastAPI):
     """Application lifespan context manager."""
     # Startup: Initialize database
     await init_database()
+
+    # Start background scheduler for Plaid sync (every 12 hours)
+    # Set to 0 to disable automatic syncing
+    start_scheduler(sync_interval_hours=12)
+
     yield
-    # Shutdown: cleanup if needed
+
+    # Shutdown: Stop scheduler
+    stop_scheduler()
 
 
 app = FastAPI(
@@ -36,6 +44,7 @@ templates = Jinja2Templates(directory=settings.templates_dir)
 app.include_router(dashboard.router)
 app.include_router(transactions.router)
 app.include_router(imports.router)
+app.include_router(plaid.router)
 app.include_router(categories.router)
 
 

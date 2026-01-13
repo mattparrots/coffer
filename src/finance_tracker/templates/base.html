@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 </head>
 <body>
     <div class="container">
@@ -18,6 +19,7 @@
                 <li><a href="/" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a></li>
                 <li><a href="/transactions" class="{% if active_page == 'transactions' %}active{% endif %}">Transactions</a></li>
                 <li><a href="/import" class="{% if active_page == 'import' %}active{% endif %}">Import</a></li>
+                <li><a href="/plaid/connections" class="{% if active_page == 'connections' %}active{% endif %}">Bank Connections</a></li>
                 <li><a href="/categories" class="{% if active_page == 'categories' %}active{% endif %}">Categories</a></li>
             </ul>
         </nav>

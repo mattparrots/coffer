@@ -74,7 +74,16 @@
                 <tr>
                     <td>{{ txn.date }}</td>
                     <td>
-                        <div><strong>{{ txn.merchant or txn.description }}</strong></div>
+                        <div>
+                            <strong>{{ txn.merchant or txn.description }}</strong>
+                            {% if txn.source %}
+                                {% if txn.source == 'plaid' %}
+                                    <span class="badge" style="background-color: #667eea33; color: #667eea; font-size: 0.75rem; margin-left: 0.5rem;">🔗 Plaid</span>
+                                {% else %}
+                                    <span class="badge" style="background-color: #6b728033; color: #6b7280; font-size: 0.75rem; margin-left: 0.5rem;">📁 CSV</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
                         {% if txn.merchant and txn.merchant != txn.description %}
                         <div style="font-size: 0.875rem; color: var(--text-secondary);">{{ txn.description }}</div>
                         {% endif %}

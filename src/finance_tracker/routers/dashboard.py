@@ -39,6 +39,35 @@ async def dashboard(request: Request):
         # Get recent transactions
         recent = await get_recent_transactions(db, limit=10)
 
+        # Get Plaid connections status
+        cursor = await db.execute(
+            """
+            SELECT
+                pi.id,
+                pi.institution_name,
+                pi.status,
+                pi.last_sync_at,
+                COUNT(pa.id) as account_count
+            FROM plaid_items pi
+            LEFT JOIN plaid_accounts pa ON pa.plaid_item_id = pi.id
+            WHERE pi.status != 'disconnected'
+            GROUP BY pi.id
+            ORDER BY pi.created_at DESC
+            LIMIT 5
+            """
+        )
+        plaid_rows = await cursor.fetchall()
+        plaid_connections = [
+            {
+                "id": row[0],
+                "institution_name": row[1] or "Unknown Bank",
+                "status": row[2],
+                "last_sync_at": row[3],
+                "account_count": row[4],
+            }
+            for row in plaid_rows
+        ]
+
     return templates.TemplateResponse(
         "dashboard.html",
         {
@@ -49,5 +78,6 @@ async def dashboard(request: Request):
             "cash_flow": cash_flow,
             "recent_transactions": recent,
             "current_month": now.strftime("%B %Y"),
+            "plaid_connections": plaid_connections,
         },
     )

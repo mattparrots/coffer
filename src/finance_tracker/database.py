@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS accounts (
     name TEXT NOT NULL,
     institution TEXT,
     account_type TEXT,
+    source TEXT DEFAULT 'manual',
+    plaid_item_id INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -41,6 +43,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     original_category TEXT,
     notes TEXT,
     import_hash TEXT UNIQUE,
+    plaid_transaction_id TEXT UNIQUE,
+    is_pending BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -62,12 +66,46 @@ CREATE TABLE IF NOT EXISTS category_rules (
     priority INTEGER DEFAULT 0
 );
 
+-- Plaid Items: bank connections
+CREATE TABLE IF NOT EXISTS plaid_items (
+    id INTEGER PRIMARY KEY,
+    item_id TEXT UNIQUE NOT NULL,
+    access_token TEXT NOT NULL,
+    institution_id TEXT,
+    institution_name TEXT,
+    cursor TEXT,
+    last_sync_at TIMESTAMP,
+    status TEXT DEFAULT 'active',
+    error_code TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Plaid Accounts: individual accounts within a Plaid Item
+CREATE TABLE IF NOT EXISTS plaid_accounts (
+    id INTEGER PRIMARY KEY,
+    plaid_item_id INTEGER REFERENCES plaid_items(id) ON DELETE CASCADE,
+    account_id INTEGER REFERENCES accounts(id),
+    plaid_account_id TEXT UNIQUE NOT NULL,
+    account_name TEXT,
+    account_type TEXT,
+    account_subtype TEXT,
+    available_balance DECIMAL(10,2),
+    current_balance DECIMAL(10,2),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
 CREATE INDEX IF NOT EXISTS idx_transactions_account ON transactions(account_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_import_hash ON transactions(import_hash);
+CREATE INDEX IF NOT EXISTS idx_transactions_plaid_id ON transactions(plaid_transaction_id);
 CREATE INDEX IF NOT EXISTS idx_category_rules_priority ON category_rules(priority DESC);
+CREATE INDEX IF NOT EXISTS idx_plaid_items_status ON plaid_items(status);
+CREATE INDEX IF NOT EXISTS idx_plaid_accounts_item ON plaid_accounts(plaid_item_id);
+CREATE INDEX IF NOT EXISTS idx_plaid_accounts_active ON plaid_accounts(is_active);
 """
 
 
