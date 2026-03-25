@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
-import '../styles/globals.css';
 
 function timeAgo(iso) {
   const diff = Date.now() - new Date(iso).getTime();
